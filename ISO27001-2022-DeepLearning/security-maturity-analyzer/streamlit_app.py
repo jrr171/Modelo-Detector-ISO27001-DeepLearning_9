@@ -226,7 +226,7 @@ with tab_compare:
             with tempfile.NamedTemporaryFile(suffix=_os.path.splitext(cf.name)[1] or ".log", delete=False) as tf:
                 tf.write(cf.read()); tf_path = tf.name
             _p = LogParser(); _e = _p.parse_path(tf_path); _os.unlink(tf_path)
-            _s = EventClassifier().classify(_e); _r = MaturityScorer().score(_s)
+            _cls = EventClassifier().classify(_e); _s = _cls.domain_stats; _r = MaturityScorer().score(_cls)
             compare_results.append({"name": cf.name[:30], "result": _r, "entries": len(_e)})
 
         if compare_results:
@@ -311,8 +311,10 @@ if not entries:
 
 # Pipeline
 with st.spinner("Clasificando eventos y calculando madurez…"):
-    domain_stats = EventClassifier().classify(entries)
-    result = MaturityScorer().score(domain_stats)
+    _cls_result  = EventClassifier().classify(entries)
+    domain_stats = _cls_result.domain_stats   # dict[str, DomainStats]
+    a8_sub_stats = _cls_result.a8_sub_stats   # dict[str, A8SubStats]
+    result = MaturityScorer().score(_cls_result)
     gap    = compute_gap_analysis(result)
     st.session_state["_gap"] = gap
 
@@ -330,7 +332,7 @@ kpis = [
     (f"Nivel {lvl}", lvl_info["name"][:16], lc),
     (f"{result.total_events:,}", "EVENTOS TOTALES", C["primary"]),
     (f"{result.total_risk_events:,}", "EVENTOS DE RIESGO", C["danger"]),
-    (f"{result.total_domains_active}/{len(domain_stats)}", "DOMINIOS ACTIVOS", C["success"]),
+    (f"{result.total_domains_active}/{len(result.domain_scores)}", "DOMINIOS ACTIVOS", C["success"]),
     (f"{result.total_risk_events/max(result.total_events,1):.1%}", "TASA DE RIESGO", C["warning"]),
 ]
 for col, (val, lbl, color) in zip([c1,c2,c3,c4,c5,c6], kpis):
@@ -796,7 +798,7 @@ with col_bar1:
     st.markdown("#### ⚠ Eventos de Riesgo vs Seguros por Dominio")
     dom_keys = list(domain_stats.keys())
     dom_names_short = [DOMAIN_SHORT_2022.get(d.domain_key, d.domain_name[:22]) for d in domains]
-    safe_counts = [domain_stats[k].indicator_events for k in dom_keys]
+    safe_counts = [domain_stats[k].safe_events for k in dom_keys]
     risk_counts = [domain_stats[k].risk_events      for k in dom_keys]
 
     fig_bar = go.Figure()
