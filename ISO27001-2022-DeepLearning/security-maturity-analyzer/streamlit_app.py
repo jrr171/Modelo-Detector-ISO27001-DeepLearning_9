@@ -52,6 +52,7 @@ C = {
 }
 
 def level_color(lvl): return C["level"].get(lvl, "#555")
+LEVEL_COLORS = C["level"]  # alias para compatibilidad
 
 def score_color(s):
     if s >= 81: return C["level"][5]
@@ -612,7 +613,7 @@ if hasattr(result, "a8_sub_scores") and result.a8_sub_scores:
     sub_scores = [result.a8_sub_scores[k].raw_score for k in sub_keys]
     sub_labels = [_A8_SUBLABELS.get(k, k) for k in sub_keys]
     sub_levels = [result.a8_sub_scores[k].level for k in sub_keys]
-    a8_lc = LEVEL_COLORS.get(result.domain_scores.get("A8_technological", type("o", (), {"level": 3})()).level, "#1565C0")
+    a8_lc = C["level"].get(result.domain_scores.get("A8_technological", type("o", (), {"level": 3})()).level, "#1565C0")
 
     fig_a8 = go.Figure()
     fig_a8.add_trace(go.Scatterpolar(
@@ -629,7 +630,7 @@ if hasattr(result, "a8_sub_scores") and result.a8_sub_scores:
         fig_a8.add_trace(go.Scatterpolar(
             r=[sc], theta=[lbl],
             mode="markers+text",
-            marker=dict(size=10, color=LEVEL_COLORS.get(lv, "#1565C0"), symbol="circle"),
+            marker=dict(size=10, color=C["level"].get(lv, "#1565C0"), symbol="circle"),
             text=[f"Nv{lv} · {sc:.0f}"],
             textposition="top center",
             textfont=dict(size=10, color="#1A1A2E"),
@@ -668,7 +669,7 @@ if hasattr(result, "a8_sub_scores") and result.a8_sub_scores:
         st.markdown("##### Sub-áreas A.8 (ISO/IEC 27002:2022)")
         for k in sub_keys:
             ss = result.a8_sub_scores[k]
-            lv_color = LEVEL_COLORS.get(ss.level, "#1565C0")
+            lv_color = C["level"].get(ss.level, "#1565C0")
             st.markdown(
                 f'<div style="border-left:4px solid {lv_color};padding:6px 10px;'
                 f'margin-bottom:8px;background:#F8FAFF;border-radius:4px;">'
