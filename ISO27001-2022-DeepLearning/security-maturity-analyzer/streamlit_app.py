@@ -690,7 +690,7 @@ else:
 
 # ── Interpretación textual debajo del radar ────────────────────────────────────
 DOMAIN_WEIGHT = {k: ISO27001_DOMAINS[k].weight for k in ISO27001_DOMAINS}
-DOMAIN_CLAUSE = {k: ISO27001_DOMAINS[k].clause for k in ISO27001_DOMAINS}
+DOMAIN_CLAUSE = {k: ISO27001_DOMAINS[k].annex_ref for k in ISO27001_DOMAINS}
 
 # ── ISO/IEC 27001:2022 — Etiquetas cortas por dominio ──────────────────────
 DOMAIN_BADGE_2022 = {
@@ -860,7 +860,7 @@ with col_scores:
     st.markdown("#### 📊 Score y Nivel por Dominio")
     sorted_domains = sorted(domains, key=lambda d: d.raw_score)
     bar_colors  = [level_color(d.level) for d in sorted_domains]
-    bar_names   = [f"{d.domain_name}  [{DOMAIN_BADGE_2022.get(d.domain_key, d.clause.split(chr(8211))[0].strip())}]" for d in sorted_domains]
+    bar_names   = [f"{d.domain_name}  [{DOMAIN_BADGE_2022.get(d.domain_key, d.annex_ref.split('–')[0].strip())}]" for d in sorted_domains]
     bar_scores  = [d.raw_score for d in sorted_domains]
     bar_levels  = [f"Nivel {d.level} — {d.level_name}" for d in sorted_domains]
 
@@ -1211,7 +1211,7 @@ for key, d in result.domain_scores.items():
     ds = domain_stats[key]
     table_data.append({
         "Dominio": d.domain_name,
-        "Cláusula": DOMAIN_BADGE_2022.get(d.domain_key, d.clause.split("–")[0].strip()),
+        "Cláusula": DOMAIN_BADGE_2022.get(d.domain_key, d.annex_ref.split('–')[0].strip()),
         "Peso": f"{d.weight:.0%}",
         "Score": f"{d.raw_score:.1f}",
         "Nivel": f"{d.level} — {d.level_name}",
