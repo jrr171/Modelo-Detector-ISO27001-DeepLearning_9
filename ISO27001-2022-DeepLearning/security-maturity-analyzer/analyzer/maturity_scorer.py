@@ -242,6 +242,7 @@ class GapAnalysis:
     weakest_domain_name: str
     weakest_score:       float
     weakest_level:       int
+    weakest_level_name:  str
     strongest_domain_id: str
     strongest_domain_name: str
     strongest_score:     float
@@ -326,6 +327,7 @@ def compute_gap_analysis(result: "MaturityResult") -> GapAnalysis:
         weakest_domain_name=weakest.domain_name,
         weakest_score=weakest.raw_score,
         weakest_level=weakest.level,
+        weakest_level_name=MATURITY_LEVELS[weakest.level]["name"],
         strongest_domain_id=strongest.domain_id,
         strongest_domain_name=strongest.domain_name,
         strongest_score=strongest.raw_score,
